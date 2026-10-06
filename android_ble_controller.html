@@ -3,60 +3,83 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
 <title>DeskPet-Doom controller</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; height: 100%; background: #101418; color: #e8eef2;
-    font-family: system-ui, sans-serif; touch-action: none; overscroll-behavior: none; }
-  body { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 14px; }
-  h1 { font-size: 18px; margin: 0; letter-spacing: .5px; }
-  #status { font-size: 14px; padding: 6px 12px; border-radius: 999px; background: #232a31; }
+    font-family: system-ui, sans-serif; touch-action: none; overscroll-behavior: none;
+    overflow: hidden; }
+  body { display: flex; flex-direction: column; }
+
+  /* --- top bar (compact so the controls get the screen) --- */
+  header { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+  h1 { font-size: 15px; letter-spacing: 1px; margin: 0; white-space: nowrap; }
+  #status { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #232a31;
+    white-space: nowrap; margin-left: auto; }
   #status.ok { background: #14532d; }
   #status.bad { background: #7f1d1d; }
-  button { font: inherit; color: inherit; background: #232a31; border: 1px solid #3b4450; }
-  #connect { padding: 12px 24px; border-radius: 10px; font-size: 16px; border: none; background: #2563eb; }
+  #connect { padding: 8px 16px; border-radius: 9px; font-size: 13px; border: none;
+    background: #2563eb; color: #fff; white-space: nowrap; }
   #connect:disabled { background: #334155; }
-  .pad { display: grid; grid-template-columns: repeat(3, 84px); grid-template-rows: repeat(3, 84px); gap: 8px; }
-  .key { border-radius: 14px; font-size: 26px; display: flex; align-items: center; justify-content: center;
-    border: 1px solid #3b4450; user-select: none; }
+  button { font: inherit; color: inherit; background: #232a31; border: 1px solid #3b4450; }
+
+  /* --- gamepad row: dpad left, actions right --- */
+  .gamepad { flex: 1; display: flex; align-items: center; justify-content: space-evenly;
+    min-height: 0; padding: 8px 2vw; }
+
+  .key { border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    user-select: none; touch-action: none; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
   .key.on { background: #2563eb; border-color: #60a5fa; }
-  .actions { display: flex; gap: 10px; }
-  .actions .key { width: 96px; height: 72px; font-size: 15px; letter-spacing: 1px; }
-  .legend { font-size: 12px; color: #8b98a5; text-align: center; line-height: 1.5; max-width: 320px; }
-  .spacer { flex: 1; }
+
+  /* D-pad: 3x3 with the arrows in an L, on the left */
+  .dpad { display: grid; grid-template-columns: repeat(3, min(17vmin, 92px));
+    grid-template-rows: repeat(3, min(17vmin, 92px)); gap: 2.5vmin; }
+  .dpad .key { font-size: min(7vmin, 34px); border-radius: 18px; }
+
+  /* action cluster on the right: FIRE big, USE + MAP below */
+  .actions { display: flex; flex-direction: column; align-items: center; gap: 2.5vmin; }
+  #fire { width: min(26vmin, 150px); height: min(26vmin, 150px); border-radius: 50%;
+    font-size: min(5vmin, 22px); border: 2px solid #7f1d1d; background: #3b0a0a; }
+  #fire.on { background: #dc2626; border-color: #f87171; }
+  #use  { width: min(26vmin, 150px); height: min(13vmin, 64px); border-radius: 14px;
+    font-size: min(4.5vmin, 20px); }
+  #map  { width: min(26vmin, 150px); height: min(13vmin, 64px); border-radius: 14px;
+    font-size: min(4.5vmin, 20px); }
+
+  .legend { font-size: 11px; color: #8b98a5; text-align: center; padding: 4px 8px; }
 </style>
 </head>
 <body>
-  <h1>PET DOOM MODE</h1>
-  <div id="status">not connected</div>
-  <button id="connect">Connect to DeskPet-Doom</button>
+  <header>
+    <h1>PET·DOOM</h1>
+    <div id="status">not connected</div>
+    <button id="connect">Connect</button>
+  </header>
 
-  <div class="pad">
-    <span></span>
-    <div class="key" data-bit="1">▲</div>
-    <span></span>
-    <div class="key" data-bit="4">◀</div>
-    <div class="key" data-bit="2">▼</div>
-    <div class="key" data-bit="8">▶</div>
-    <span></span>
-    <span></span>
-    <span></span>
+  <div class="gamepad">
+    <div class="dpad">
+      <span></span>
+      <div class="key" data-bit="1">▲</div>
+      <span></span>
+      <div class="key" data-bit="4">◀</div>
+      <div class="key" data-bit="2">▼</div>
+      <div class="key" data-bit="8">▶</div>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="actions">
+      <div class="key" id="fire" data-bit="16">FIRE</div>
+      <div class="key" id="use"  data-bit="32">USE</div>
+      <div class="key" id="map"  data-bit="64">MAP</div>
+      <div class="key" id="mute" data-bit="128" data-pulse="1">MUTE</div>
+    </div>
   </div>
 
-  <div class="actions">
-    <div class="key" data-bit="16">FIRE</div>
-    <div class="key" data-bit="32">USE</div>
-    <div class="key" data-bit="64">MAP</div>
-  </div>
-
-  <div class="spacer"></div>
-  <p class="legend">
-    Web Bluetooth needs a secure page: open this file from an HTTPS host
-    (GitHub Pages, Netlify, etc.) or from <code>localhost</code>.
-    Chrome on Android, Bluetooth on.<br>
-    Move: ▲/▼ &nbsp; Turn: ◀/▶ &nbsp; MAP toggles Doom's automap.
-  </p>
+  <p class="legend">▲/▼ move · ◀/▶ turn · FIRE · USE · MAP automap · MUTE sound</p>
 
 <script>
 const SERVICE_UUID = "d00d0001-0000-4000-8000-000000000000";
@@ -64,13 +87,22 @@ const COMMAND_UUID = "d00d0002-0000-4000-8000-000000000000";
 
 const statusEl = document.getElementById("status");
 const connectEl = document.getElementById("connect");
-const keys = Array.from(document.querySelectorAll(".key[data-bit]"));
+const keys = Array.from(document.querySelectorAll(".key[data-bit]"))
+  .filter(k => !k.dataset.pulse);
 
 let device = null;
 let characteristic = null;
 let mask = 0;
 let pending = null;
 let sending = false;
+
+function lockLandscape() {
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      Promise.resolve(screen.orientation.lock("landscape")).catch(() => {});
+    }
+  } catch (e) { /* best effort only */ }
+}
 
 function setStatus(text, cls) {
   statusEl.textContent = text;
@@ -134,11 +166,22 @@ keys.forEach(key => {
   key.addEventListener("contextmenu", e => e.preventDefault());
 });
 
+// Momentary MUTE: pulse bit7 (do not hold, or the firmware toggles repeatedly).
+const muteEl = document.getElementById("mute");
+muteEl.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  muteEl.setPointerCapture(e.pointerId);
+  setBit(Number(muteEl.dataset.bit), true);
+  setTimeout(() => setBit(Number(muteEl.dataset.bit), false), 120);
+});
+
 async function connect() {
   if (!navigator.bluetooth) {
-    setStatus("Web Bluetooth not available in this browser", "bad");
+    setStatus("Web Bluetooth not available", "bad");
     return;
   }
+
+  lockLandscape();
 
   try {
     setStatus("scanning...", "");
@@ -170,6 +213,7 @@ async function connect() {
 }
 
 connectEl.addEventListener("click", connect);
+lockLandscape();
 </script>
 </body>
 </html>

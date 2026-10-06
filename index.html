@@ -25,57 +25,57 @@
   #connect:disabled { background: #334155; }
   button { font: inherit; color: inherit; background: #232a31; border: 1px solid #3b4450; }
 
-  /* --- gamepad row: dpad left, actions right --- */
-  .gamepad { flex: 1; display: flex; align-items: center; justify-content: space-evenly;
-    min-height: 0; padding: 8px 2vw; }
+  /* --- gamepad row: two diamond clusters, dpad left / actions right --- */
+  .gamepad { flex: 1; display: flex; align-items: center; justify-content: space-between;
+    min-height: 0; padding: 8px 4vw; }
 
   .key { border-radius: 16px; display: flex; align-items: center; justify-content: center;
     user-select: none; touch-action: none; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
   .key.on { background: #2563eb; border-color: #60a5fa; }
 
-  /* D-pad: 3x3 with the arrows in an L, on the left */
-  .dpad { display: grid; grid-template-columns: repeat(3, min(17vmin, 92px));
-    grid-template-rows: repeat(3, min(17vmin, 92px)); gap: 2.5vmin; }
-  .dpad .key { font-size: min(7vmin, 34px); border-radius: 18px; }
+  /* both clusters are 3x3 grids -> diamond shape */
+  .cluster { display: grid; grid-template-columns: repeat(3, min(15vmin, 88px));
+    grid-template-rows: repeat(3, min(15vmin, 88px)); gap: 2.5vmin; }
 
-  /* action cluster on the right: FIRE big, USE + MAP below */
-  .actions { display: flex; flex-direction: column; align-items: center; gap: 2.5vmin; }
-  #fire { width: min(26vmin, 150px); height: min(26vmin, 150px); border-radius: 50%;
-    font-size: min(5vmin, 22px); border: 2px solid #7f1d1d; background: #3b0a0a; }
+  .cluster .key { border-radius: 50%; font-size: min(6.5vmin, 30px); }
+  #dpad .key { font-size: min(7vmin, 34px); }
+  #fire { background: #3b0a0a; border-color: #7f1d1d; }
   #fire.on { background: #dc2626; border-color: #f87171; }
-  #use  { width: min(26vmin, 150px); height: min(13vmin, 64px); border-radius: 14px;
-    font-size: min(4.5vmin, 20px); }
-  #map  { width: min(26vmin, 150px); height: min(13vmin, 64px); border-radius: 14px;
-    font-size: min(4.5vmin, 20px); }
+  #use, #map, #mute { font-size: min(4vmin, 16px); letter-spacing: 1px; }
 
   .legend { font-size: 11px; color: #8b98a5; text-align: center; padding: 4px 8px; }
 </style>
 </head>
 <body>
   <header>
-    <h1>PET·DOOM</h1>
+    <h1>DOOM CONTROLLER</h1>
     <div id="status">not connected</div>
     <button id="connect">Connect</button>
   </header>
 
   <div class="gamepad">
-    <div class="dpad">
+    <div class="cluster" id="dpad">
       <span></span>
       <div class="key" data-bit="1">▲</div>
       <span></span>
       <div class="key" data-bit="4">◀</div>
-      <div class="key" data-bit="2">▼</div>
+      <span></span>
       <div class="key" data-bit="8">▶</div>
       <span></span>
-      <span></span>
+      <div class="key" data-bit="2">▼</div>
       <span></span>
     </div>
 
-    <div class="actions">
+    <div class="cluster">
+      <span></span>
       <div class="key" id="fire" data-bit="16">FIRE</div>
-      <div class="key" id="use"  data-bit="32">USE</div>
-      <div class="key" id="map"  data-bit="64">MAP</div>
+      <span></span>
+      <div class="key" id="use" data-bit="32">USE</div>
+      <span></span>
+      <div class="key" id="map" data-bit="64">MAP</div>
+      <span></span>
       <div class="key" id="mute" data-bit="128" data-pulse="1">MUTE</div>
+      <span></span>
     </div>
   </div>
 

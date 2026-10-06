@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>DeskPet-Doom controller</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #101418; color: #e8eef2;
+    font-family: system-ui, sans-serif; touch-action: none; overscroll-behavior: none; }
+  body { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 14px; }
+  h1 { font-size: 18px; margin: 0; letter-spacing: .5px; }
+  #status { font-size: 14px; padding: 6px 12px; border-radius: 999px; background: #232a31; }
+  #status.ok { background: #14532d; }
+  #status.bad { background: #7f1d1d; }
+  button { font: inherit; color: inherit; background: #232a31; border: 1px solid #3b4450; }
+  #connect { padding: 12px 24px; border-radius: 10px; font-size: 16px; border: none; background: #2563eb; }
+  #connect:disabled { background: #334155; }
+  .pad { display: grid; grid-template-columns: repeat(3, 84px); grid-template-rows: repeat(3, 84px); gap: 8px; }
+  .key { border-radius: 14px; font-size: 26px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid #3b4450; user-select: none; }
+  .key.on { background: #2563eb; border-color: #60a5fa; }
+  .actions { display: flex; gap: 10px; }
+  .actions .key { width: 96px; height: 72px; font-size: 15px; letter-spacing: 1px; }
+  .legend { font-size: 12px; color: #8b98a5; text-align: center; line-height: 1.5; max-width: 320px; }
+  .spacer { flex: 1; }
+</style>
+</head>
+<body>
+  <h1>PET DOOM MODE</h1>
+  <div id="status">not connected</div>
+  <button id="connect">Connect to DeskPet-Doom</button>
+
+  <div class="pad">
+    <span></span>
+    <div class="key" data-bit="1">▲</div>
+    <span></span>
+    <div class="key" data-bit="4">◀</div>
+    <div class="key" data-bit="2">▼</div>
+    <div class="key" data-bit="8">▶</div>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="actions">
+    <div class="key" data-bit="16">FIRE</div>
+    <div class="key" data-bit="32">USE</div>
+    <div class="key" data-bit="64">MAP</div>
+  </div>
+
+  <div class="spacer"></div>
+  <p class="legend">
+    Web Bluetooth needs a secure page: open this file from an HTTPS host
+    (GitHub Pages, Netlify, etc.) or from <code>localhost</code>.
+    Chrome on Android, Bluetooth on.<br>
+    Move: ▲/▼ &nbsp; Turn: ◀/▶ &nbsp; MAP toggles Doom's automap.
+  </p>
+
+<script>
+const SERVICE_UUID = "d00d0001-0000-4000-8000-000000000000";
+const COMMAND_UUID = "d00d0002-0000-4000-8000-000000000000";
+
+const statusEl = document.getElementById("status");
+const connectEl = document.getElementById("connect");
+const keys = Array.from(document.querySelectorAll(".key[data-bit]"));
+
+let device = null;
+let characteristic = null;
+let mask = 0;
+let pending = null;
+let sending = false;
+
+function setStatus(text, cls) {
+  statusEl.textContent = text;
+  statusEl.className = cls || "";
+}
+
+function render() {
+  keys.forEach(k => k.classList.toggle("on", (mask & Number(k.dataset.bit)) !== 0));
+}
+
+async function writeMask(value) {
+  if (!characteristic) return;
+  const data = new Uint8Array([value]);
+  if (characteristic.writeValueWithoutResponse) {
+    try {
+      await characteristic.writeValueWithoutResponse(data);
+      return;
+    } catch (e) { /* fall through to write-with-response */ }
+  }
+  await characteristic.writeValue(data);
+}
+
+function pushMask() {
+  pending = mask;
+  if (sending) return;
+  sending = true;
+  (async () => {
+    try {
+      while (pending !== null) {
+        const value = pending;
+        pending = null;
+        await writeMask(value);
+      }
+    } catch (e) {
+      setStatus("write failed: " + e.message, "bad");
+    } finally {
+      sending = false;
+    }
+  })();
+}
+
+function setBit(bit, pressed) {
+  const next = pressed ? (mask | bit) : (mask & ~bit);
+  if (next === mask) return;
+  mask = next;
+  render();
+  pushMask();
+}
+
+keys.forEach(key => {
+  const bit = Number(key.dataset.bit);
+  key.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    key.setPointerCapture(e.pointerId);
+    setBit(bit, true);
+  });
+  const release = e => setBit(bit, false);
+  key.addEventListener("pointerup", release);
+  key.addEventListener("pointercancel", release);
+  key.addEventListener("lostpointercapture", release);
+  key.addEventListener("contextmenu", e => e.preventDefault());
+});
+
+async function connect() {
+  if (!navigator.bluetooth) {
+    setStatus("Web Bluetooth not available in this browser", "bad");
+    return;
+  }
+
+  try {
+    setStatus("scanning...", "");
+    device = await navigator.bluetooth.requestDevice({
+      filters: [{ name: "DeskPet-Doom" }],
+      optionalServices: [SERVICE_UUID]
+    });
+
+    device.addEventListener("gattserverdisconnected", () => {
+      characteristic = null;
+      mask = 0;
+      render();
+      setStatus("disconnected", "bad");
+      connectEl.disabled = false;
+    });
+
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE_UUID);
+    characteristic = await service.getCharacteristic(COMMAND_UUID);
+
+    connectEl.disabled = true;
+    setStatus("connected to DeskPet-Doom", "ok");
+    mask = 0;
+    render();
+    pushMask();
+  } catch (e) {
+    setStatus(e.name === "NotFoundError" ? "no device selected" : e.message, "bad");
+  }
+}
+
+connectEl.addEventListener("click", connect);
+</script>
+</body>
+</html>

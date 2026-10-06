@@ -13,7 +13,7 @@
     overflow: hidden; }
   body { display: flex; flex-direction: column; }
 
-  /* --- top bar (compact so the controller gets the screen) --- */
+  /* --- top bar --- */
   header { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
   h1 { font-size: 15px; letter-spacing: 1px; margin: 0; white-space: nowrap; }
   #status { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #232a31;
@@ -25,53 +25,77 @@
   #connect:disabled { background: #334155; }
   button { font: inherit; color: inherit; background: #232a31; border: 1px solid #3b4450; }
 
-  /* --- controller shell (classic gray pad) --- */
+  /* --- NES controller shell --- */
   .gamepad { flex: 1; min-height: 0; display: flex; padding: 1vmin 0 0; }
+
   .shell {
     flex: 1; margin: 0 2vmin; display: flex; flex-direction: column;
-    align-items: center; justify-content: space-evenly; padding: 2vmin 3vmin;
-    border-radius: 4vmin;
-    background: linear-gradient(180deg, #a8aeb3, #8e949a);
-    box-shadow: inset 0 0 0 2px #6d7379, 0 8px 20px rgba(0,0,0,.5);
+    align-items: stretch; justify-content: space-evenly; padding: 3vmin 4vmin 2vmin;
+    border-radius: 5vmin;
+    background: linear-gradient(180deg, #c0c4c8 0%, #a0a5aa 45%, #8e9398 100%);
+    box-shadow:
+      inset 0 0 0 3px #6d7276,          /* outer seam line  */
+      inset 0 0 0 7px #989da2,          /* inner groove     */
+      inset 0 6px 12px rgba(255,255,255,.35),   /* top plastic shine */
+      inset 0 -8px 14px rgba(0,0,0,.22),        /* bottom shade     */
+      0 10px 24px rgba(0,0,0,.55);              /* drop shadow      */
   }
-  .controls { flex: 1; width: 100%; display: flex; align-items: center;
+
+  .controls { flex: 1; width: 100%; display: flex; align-items: flex-start;
     justify-content: space-between; }
-  .brand { font-size: min(2.6vmin, 11px); letter-spacing: 2px; color: #5c6166;
-    text-align: center; margin-top: 1vmin; font-style: italic; }
 
-  .key { user-select: none; touch-action: none; }
-  .key.on { border-color: #fbbf24 !important; box-shadow: 0 0 0 2px #fbbf24, 0 3px 8px rgba(0,0,0,.4); }
+  /* --- D-pad: one contiguous black cross --- */
+  #dpad { display: grid; grid-template: repeat(3, min(11.5vmin, 58px)) / repeat(3, min(11.5vmin, 58px));
+    gap: 0; }
+  #dpad .key, #dpad .cap {
+    border-radius: 1.6vmin; background: linear-gradient(180deg, #2f3236, #16181b);
+    border: 1px solid #05070a;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.14), inset 0 -2px 4px rgba(0,0,0,.6),
+                0 2px 5px rgba(0,0,0,.5);
+  }
+  #dpad .key { color: #b9bec3; font-size: min(5.6vmin, 28px); display: flex;
+    align-items: center; justify-content: center; }
+  #dpad .key.on { color: #fff; box-shadow: 0 0 0 2px #fbbf24, inset 0 2px 3px rgba(255,255,255,.2); }
+  #dpad .cap { pointer-events: none; }
 
-  /* --- D-pad: dark cruciform, left-hand cluster --- */
-  #dpad { display: grid; grid-template: repeat(3, min(12vmin, 60px)) / repeat(3, min(12vmin, 60px));
-    gap: 1vmin; }
-  #dpad .key { border-radius: 2.2vmin; background: linear-gradient(180deg,#2b2b2b,#15171a);
-    border: 1px solid #04060a; color: #c4c9ce; font-size: min(6vmin, 30px);
-    display: flex; align-items: center; justify-content: center; }
+  /* --- SELECT / START: light gray concave pill buttons --- */
+  .mid { display: flex; gap: 3vmin; align-items: flex-start; margin-top: 6vmin; }
+  .mid .key { width: min(16vmin, 74px); height: min(5.5vmin, 24px); border-radius: 100px;
+    background: linear-gradient(180deg, #d8dbdd, #b9bdc1); border: 1px solid #8f9499;
+    color: #4a4f54; font-size: min(2.6vmin, 11px); letter-spacing: 1px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), 0 2px 3px rgba(0,0,0,.3);
+    text-transform: uppercase; }
 
-  /* --- START / SELECT pills, middle of the pad --- */
-  .mid { display: flex; gap: 2.4vmin; align-items: center; }
-  .mid .key { width: min(16vmin, 70px); height: min(5.5vmin, 24px); border-radius: 100px;
-    background: linear-gradient(180deg,#3a3f46,#23272c); border: 1px solid #15181c;
-    color: #d6dce2; font-size: min(2.6vmin, 11px); letter-spacing: 1px;
-    display: flex; align-items: center; justify-content: center; }
-
-  /* --- A / B round buttons, right-hand cluster (diagonal like the NES) --- */
-  #ab { display: grid; grid-template: repeat(2, min(13vmin, 66px)) / repeat(2, min(13vmin, 66px));
-    gap: 1.4vmin; }
+  /* --- A / B: red domed round buttons, diagonal (A upper-right, B lower-left) --- */
+  #ab { display: grid; grid-template: repeat(2, min(12vmin, 62px)) / repeat(2, min(12vmin, 62px));
+    gap: 1.6vmin; }
   #fire { grid-area: 1 / 2 / 2 / 3; flex-direction: column; gap: 0.2vmin; }
   #use  { grid-area: 2 / 1 / 3 / 2; flex-direction: column; gap: 0.2vmin; }
   #fire, #use { border-radius: 50%; display: flex; align-items: center; justify-content: center;
     border: 2px solid; }
-  #fire { background: radial-gradient(circle at 35% 30%, #e0483c, #a51108);
-    border-color: #7d0c04; color: #fff; }
-  #fire.on { background: radial-gradient(circle at 35% 30%, #ffb3aa, #ff3b2f); }
-  #use { background: radial-gradient(circle at 35% 30%, #f2766b, #c0261a);
-    border-color: #8c160d; color: #fff; }
-  #use.on { background: radial-gradient(circle at 35% 30%, #ffcfc9, #ff6a5c); }
-  #fire .lbl { font-size: min(7vmin, 34px); font-weight: 700; line-height: 1; }
-  #fire .fn, #use .fn { font-size: min(2.6vmin, 11px); letter-spacing: 1px; }
-  #use .lbl { font-size: min(5vmin, 24px); font-weight: 700; line-height: 1; }
+  #fire { background: radial-gradient(circle at 35% 28%, #f05145, #b51409 70%, #7c0d03);
+    border-color: #6d0b02; color: #fff;
+    box-shadow: inset 0 4px 6px rgba(255,255,255,.35), inset 0 -5px 8px rgba(0,0,0,.45),
+                0 4px 6px rgba(0,0,0,.45); }
+  #fire.on { background: radial-gradient(circle at 35% 28%, #ffc2bb, #ff4636 70%, #e02012); }
+  #use { background: radial-gradient(circle at 35% 28%, #e86a5f, #c0261a 70%, #80150c);
+    border-color: #6d0b02; color: #fff;
+    box-shadow: inset 0 4px 6px rgba(255,255,255,.3), inset 0 -4px 7px rgba(0,0,0,.4),
+                0 4px 6px rgba(0,0,0,.45); }
+  #use.on { background: radial-gradient(circle at 35% 28%, #ffd7d1, #ff6a5c 70%, #e04232); }
+  #fire .lbl { font-size: min(6.6vmin, 32px); font-weight: 700; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  #fire .fn, #use .fn { font-size: min(2.4vmin, 10px); letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  #use .lbl { font-size: min(4.8vmin, 24px); font-weight: 700; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+
+  /* --- NES-style lettering, lower-left of the pad --- */
+  .brand { margin-top: 1vmin; text-align: left; padding: 0 1vmin; }
+  .brand .rule { display: block; width: min(22vmin, 110px); height: 2px; background: #c62828;
+    margin-bottom: 0.6vmin; }
+  .brand .name { display: block; font-style: italic; font-weight: 800; font-size: min(4.6vmin, 22px);
+    color: #262a2e; letter-spacing: 0.5px; line-height: 1; }
+  .brand .tag { display: block; font-style: italic; font-size: min(2.2vmin, 9px); font-weight: 600;
+    color: #5c6166; letter-spacing: 2.5px; margin-top: 0.5vmin; }
 
   .legend { font-size: 11px; color: #8b98a5; text-align: center; padding: 4px 8px; }
 </style>
@@ -91,7 +115,7 @@
           <div class="key" data-bit="1">▲</div>
           <span></span>
           <div class="key" data-bit="4">◀</div>
-          <span></span>
+          <div class="cap"></div>
           <div class="key" data-bit="8">▶</div>
           <span></span>
           <div class="key" data-bit="2">▼</div>
@@ -110,7 +134,12 @@
           <span></span>
         </div>
       </div>
-      <div class="brand">DOOM</div>
+
+      <div class="brand">
+        <span class="rule"></span>
+        <span class="name">DOOM</span>
+        <span class="tag">ENTERTAINMENT SYSTEM</span>
+      </div>
     </div>
   </div>
 

@@ -29,8 +29,8 @@
   .gamepad { flex: 1; min-height: 0; display: flex; padding: 1vmin 0 0; }
 
   .shell {
-    flex: 1; margin: 0 2vmin; display: flex; flex-direction: column;
-    align-items: stretch; justify-content: space-evenly; padding: 3vmin 4vmin 2vmin;
+    flex: 1; margin: 0 1vmin; display: flex; flex-direction: column;
+    align-items: stretch; justify-content: space-evenly; padding: 2.5vmin 3vmin 2vmin;
     border-radius: 5vmin;
     background: linear-gradient(180deg, #c0c4c8 0%, #a0a5aa 45%, #8e9398 100%);
     box-shadow:
@@ -45,7 +45,7 @@
     justify-content: space-between; }
 
   /* --- D-pad: one contiguous black cross --- */
-  #dpad { display: grid; grid-template: repeat(3, min(11.5vmin, 58px)) / repeat(3, min(11.5vmin, 58px));
+  #dpad { display: grid; grid-template: repeat(3, min(14vmin, 92px)) / repeat(3, min(14vmin, 92px));
     gap: 0; }
   #dpad .key, #dpad .cap {
     border-radius: 1.6vmin; background: linear-gradient(180deg, #2f3236, #16181b);
@@ -53,23 +53,23 @@
     box-shadow: inset 0 2px 3px rgba(255,255,255,.14), inset 0 -2px 4px rgba(0,0,0,.6),
                 0 2px 5px rgba(0,0,0,.5);
   }
-  #dpad .key { color: #b9bec3; font-size: min(5.6vmin, 28px); display: flex;
+  #dpad .key { color: #b9bec3; font-size: min(6.6vmin, 42px); display: flex;
     align-items: center; justify-content: center; }
   #dpad .key.on { color: #fff; box-shadow: 0 0 0 2px #fbbf24, inset 0 2px 3px rgba(255,255,255,.2); }
   #dpad .cap { pointer-events: none; }
 
   /* --- SELECT / START: light gray concave pill buttons --- */
-  .mid { display: flex; gap: 3vmin; align-items: flex-start; margin-top: 6vmin; }
-  .mid .key { width: min(16vmin, 74px); height: min(5.5vmin, 24px); border-radius: 100px;
+  .mid { display: flex; gap: 3.5vmin; align-items: flex-start; margin-top: 7vmin; }
+  .mid .key { width: min(22vmin, 120px); height: min(6.5vmin, 34px); border-radius: 100px;
     background: linear-gradient(180deg, #d8dbdd, #b9bdc1); border: 1px solid #8f9499;
-    color: #4a4f54; font-size: min(2.6vmin, 11px); letter-spacing: 1px; font-weight: 600;
+    color: #4a4f54; font-size: min(3.2vmin, 14px); letter-spacing: 1px; font-weight: 600;
     display: flex; align-items: center; justify-content: center;
     box-shadow: inset 0 2px 3px rgba(255,255,255,.6), 0 2px 3px rgba(0,0,0,.3);
     text-transform: uppercase; }
 
   /* --- A / B: red domed round buttons, diagonal (A upper-right, B lower-left) --- */
-  #ab { display: grid; grid-template: repeat(2, min(12vmin, 62px)) / repeat(2, min(12vmin, 62px));
-    gap: 1.6vmin; }
+  #ab { display: grid; grid-template: repeat(2, min(15vmin, 100px)) / repeat(2, min(15vmin, 100px));
+    gap: 2vmin; }
   #fire { grid-area: 1 / 2 / 2 / 3; flex-direction: column; gap: 0.2vmin; }
   #use  { grid-area: 2 / 1 / 3 / 2; flex-direction: column; gap: 0.2vmin; }
   #fire, #use { border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -84,9 +84,9 @@
     box-shadow: inset 0 4px 6px rgba(255,255,255,.3), inset 0 -4px 7px rgba(0,0,0,.4),
                 0 4px 6px rgba(0,0,0,.45); }
   #use.on { background: radial-gradient(circle at 35% 28%, #ffd7d1, #ff6a5c 70%, #e04232); }
-  #fire .lbl { font-size: min(6.6vmin, 32px); font-weight: 700; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
-  #fire .fn, #use .fn { font-size: min(2.4vmin, 10px); letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
-  #use .lbl { font-size: min(4.8vmin, 24px); font-weight: 700; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  #fire .lbl { font-size: min(8.2vmin, 52px); font-weight: 700; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  #fire .fn, #use .fn { font-size: min(3vmin, 13px); letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  #use .lbl { font-size: min(6.2vmin, 38px); font-weight: 700; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
 
   /* --- NES-style lettering, lower-left of the pad --- */
   .brand { margin-top: 1vmin; text-align: left; padding: 0 1vmin; }

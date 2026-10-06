@@ -13,7 +13,7 @@
     overflow: hidden; }
   body { display: flex; flex-direction: column; }
 
-  /* --- top bar (compact so the controls get the screen) --- */
+  /* --- top bar (compact so the controller gets the screen) --- */
   header { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
   h1 { font-size: 15px; letter-spacing: 1px; margin: 0; white-space: nowrap; }
   #status { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #232a31;
@@ -25,23 +25,53 @@
   #connect:disabled { background: #334155; }
   button { font: inherit; color: inherit; background: #232a31; border: 1px solid #3b4450; }
 
-  /* --- gamepad row: two diamond clusters, dpad left / actions right --- */
-  .gamepad { flex: 1; display: flex; align-items: center; justify-content: space-between;
-    min-height: 0; padding: 8px 4vw; }
+  /* --- controller shell (classic gray pad) --- */
+  .gamepad { flex: 1; min-height: 0; display: flex; padding: 1vmin 0 0; }
+  .shell {
+    flex: 1; margin: 0 2vmin; display: flex; flex-direction: column;
+    align-items: center; justify-content: space-evenly; padding: 2vmin 3vmin;
+    border-radius: 4vmin;
+    background: linear-gradient(180deg, #a8aeb3, #8e949a);
+    box-shadow: inset 0 0 0 2px #6d7379, 0 8px 20px rgba(0,0,0,.5);
+  }
+  .controls { flex: 1; width: 100%; display: flex; align-items: center;
+    justify-content: space-between; }
+  .brand { font-size: min(2.6vmin, 11px); letter-spacing: 2px; color: #5c6166;
+    text-align: center; margin-top: 1vmin; font-style: italic; }
 
-  .key { border-radius: 16px; display: flex; align-items: center; justify-content: center;
-    user-select: none; touch-action: none; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
-  .key.on { background: #2563eb; border-color: #60a5fa; }
+  .key { user-select: none; touch-action: none; }
+  .key.on { border-color: #fbbf24 !important; box-shadow: 0 0 0 2px #fbbf24, 0 3px 8px rgba(0,0,0,.4); }
 
-  /* both clusters are 3x3 grids -> diamond shape */
-  .cluster { display: grid; grid-template-columns: repeat(3, min(15vmin, 88px));
-    grid-template-rows: repeat(3, min(15vmin, 88px)); gap: 2.5vmin; }
+  /* --- D-pad: dark cruciform, left-hand cluster --- */
+  #dpad { display: grid; grid-template: repeat(3, min(12vmin, 60px)) / repeat(3, min(12vmin, 60px));
+    gap: 1vmin; }
+  #dpad .key { border-radius: 2.2vmin; background: linear-gradient(180deg,#2b2b2b,#15171a);
+    border: 1px solid #04060a; color: #c4c9ce; font-size: min(6vmin, 30px);
+    display: flex; align-items: center; justify-content: center; }
 
-  .cluster .key { border-radius: 50%; font-size: min(6.5vmin, 30px); }
-  #dpad .key { font-size: min(7vmin, 34px); }
-  #fire { background: #3b0a0a; border-color: #7f1d1d; }
-  #fire.on { background: #dc2626; border-color: #f87171; }
-  #use, #map, #mute { font-size: min(4vmin, 16px); letter-spacing: 1px; }
+  /* --- START / SELECT pills, middle of the pad --- */
+  .mid { display: flex; gap: 2.4vmin; align-items: center; }
+  .mid .key { width: min(16vmin, 70px); height: min(5.5vmin, 24px); border-radius: 100px;
+    background: linear-gradient(180deg,#3a3f46,#23272c); border: 1px solid #15181c;
+    color: #d6dce2; font-size: min(2.6vmin, 11px); letter-spacing: 1px;
+    display: flex; align-items: center; justify-content: center; }
+
+  /* --- A / B round buttons, right-hand cluster (diagonal like the NES) --- */
+  #ab { display: grid; grid-template: repeat(2, min(13vmin, 66px)) / repeat(2, min(13vmin, 66px));
+    gap: 1.4vmin; }
+  #fire { grid-area: 1 / 2 / 2 / 3; flex-direction: column; gap: 0.2vmin; }
+  #use  { grid-area: 2 / 1 / 3 / 2; flex-direction: column; gap: 0.2vmin; }
+  #fire, #use { border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    border: 2px solid; }
+  #fire { background: radial-gradient(circle at 35% 30%, #e0483c, #a51108);
+    border-color: #7d0c04; color: #fff; }
+  #fire.on { background: radial-gradient(circle at 35% 30%, #ffb3aa, #ff3b2f); }
+  #use { background: radial-gradient(circle at 35% 30%, #f2766b, #c0261a);
+    border-color: #8c160d; color: #fff; }
+  #use.on { background: radial-gradient(circle at 35% 30%, #ffcfc9, #ff6a5c); }
+  #fire .lbl { font-size: min(7vmin, 34px); font-weight: 700; line-height: 1; }
+  #fire .fn, #use .fn { font-size: min(2.6vmin, 11px); letter-spacing: 1px; }
+  #use .lbl { font-size: min(5vmin, 24px); font-weight: 700; line-height: 1; }
 
   .legend { font-size: 11px; color: #8b98a5; text-align: center; padding: 4px 8px; }
 </style>
@@ -54,32 +84,37 @@
   </header>
 
   <div class="gamepad">
-    <div class="cluster" id="dpad">
-      <span></span>
-      <div class="key" data-bit="1">▲</div>
-      <span></span>
-      <div class="key" data-bit="4">◀</div>
-      <span></span>
-      <div class="key" data-bit="8">▶</div>
-      <span></span>
-      <div class="key" data-bit="2">▼</div>
-      <span></span>
-    </div>
+    <div class="shell">
+      <div class="controls">
+        <div class="cluster" id="dpad">
+          <span></span>
+          <div class="key" data-bit="1">▲</div>
+          <span></span>
+          <div class="key" data-bit="4">◀</div>
+          <span></span>
+          <div class="key" data-bit="8">▶</div>
+          <span></span>
+          <div class="key" data-bit="2">▼</div>
+          <span></span>
+        </div>
 
-    <div class="cluster">
-      <span></span>
-      <div class="key" id="fire" data-bit="16">FIRE</div>
-      <span></span>
-      <div class="key" id="use" data-bit="32">USE</div>
-      <span></span>
-      <div class="key" id="map" data-bit="64">MAP</div>
-      <span></span>
-      <div class="key" id="mute" data-bit="128" data-pulse="1">MUTE</div>
-      <span></span>
+        <div class="mid">
+          <div class="key" id="select" data-bit="128" data-pulse="1">SELECT</div>
+          <div class="key" id="start" data-bit="64">START</div>
+        </div>
+
+        <div class="cluster" id="ab">
+          <span></span>
+          <div class="key" id="fire" data-bit="16"><span class="lbl">A</span><span class="fn">FIRE</span></div>
+          <div class="key" id="use" data-bit="32"><span class="lbl">B</span><span class="fn">USE</span></div>
+          <span></span>
+        </div>
+      </div>
+      <div class="brand">DOOM</div>
     </div>
   </div>
 
-  <p class="legend">▲/▼ move · ◀/▶ turn · FIRE · USE · MAP automap · MUTE sound</p>
+  <p class="legend">D-pad move / turn · A FIRE · B USE · START MAP · SELECT MUTE</p>
 
 <script>
 const SERVICE_UUID = "d00d0001-0000-4000-8000-000000000000";
@@ -167,7 +202,7 @@ keys.forEach(key => {
 });
 
 // Momentary MUTE: pulse bit7 (do not hold, or the firmware toggles repeatedly).
-const muteEl = document.getElementById("mute");
+const muteEl = document.getElementById("select");
 muteEl.addEventListener("pointerdown", e => {
   e.preventDefault();
   muteEl.setPointerCapture(e.pointerId);
